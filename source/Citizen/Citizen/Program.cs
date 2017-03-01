@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using System.Xml.XPath;
 
 namespace Citizen
 {
@@ -17,22 +14,8 @@ namespace Citizen
 
         private static async Task ListProjectConfigurations()
         {
-            var teamCityHost = ConfigurationManager.AppSettings["TeamCityHost"];
-            if (string.IsNullOrEmpty(teamCityHost))
-            {
-                teamCityHost = GetHost();
-                RewriteAppConfig("TeamCityHost", teamCityHost);
-            }
-
-            var authenticationHeader = ConfigurationManager.AppSettings["TeamCityAuthenticationHeader"];
-            if (string.IsNullOrEmpty(authenticationHeader))
-            {
-                var userName = GetUserName();
-                var password = GetPassword();
-                var basicHttpAuthHeader = CreateBasicHttpAuthHeader(userName, password);
-                authenticationHeader = basicHttpAuthHeader;
-                RewriteAppConfig("TeamCityAuthenticationHeader", basicHttpAuthHeader);
-            }
+            var teamCityHost = Parameters.GetTeamCityHost();
+            var authenticationHeader = Parameters.GetAuthenticationHeader();
 
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authenticationHeader);
@@ -57,44 +40,6 @@ namespace Citizen
             }
         }
 
-
-
-        private static void RewriteAppConfig(string key, string value)
-        {
-            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            config.AppSettings.Settings.Add(key, value);
-            config.Save(ConfigurationSaveMode.Minimal);
-        }
-
-        private static string CreateBasicHttpAuthHeader(string userName, string password)
-        {
-            var input = $"{userName}:{password}";
-            var inputBytes = Encoding.UTF8.GetBytes(input);
-            return Convert.ToBase64String(inputBytes);
-        }
-
-        private static string GetHost()
-        {
-            Console.Write("TeamCity host: ");
-            return Console.ReadLine();
-        }
-
-        private static string GetUserName()
-        {
-            Console.Write("TeamCity username: ");
-            return Console.ReadLine();
-        }
-
-        private static string GetPassword()
-        {
-            Console.Write("TeamCity password: ");
-            return Console.ReadLine();
-        }
-
-        private static void Restart()
-        {
-
-        }
 
         private static async Task<XDocument> FetchAsync(string host, string urlPath, HttpClient client)
         {
@@ -133,13 +78,6 @@ namespace Citizen
                 .Element("builds")
                 .Attribute("href")
                 .Value;
-        }
-
-        public class BuildCommand
-        {
-            public string Project { get; set; }
-            public string BuildType { get; set; }
-            public string Command { get; set; }
         }
     }
 }
