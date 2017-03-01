@@ -42,24 +42,17 @@ namespace Citizen
 
             foreach (var project in projects)
             {
-                //Console.WriteLine($"{project.Item2}");
                 var buildsDocument = FetchAsync(teamCityHost, $"projects/{project.Item1}", client);
                 var builds = await GetBuildsAsync(buildsDocument);
                 foreach (var build in builds)
                 {
-                    //Console.WriteLine($"  {build.Item2}");
                     var buildTypeDocument = FetchAsync(teamCityHost, $"buildTypes/{build.Item1}", client);
-                    var commands = await GetBuildTypesCommandsAsync(buildTypeDocument);
-                    foreach (var command in commands)
-                    {
-                        var buildCommand = new BuildCommand
-                        {
-                            Project = project.Item2,
-                            BuildType = build.Item2,
-                            Command = command
-                        };
-                        Console.WriteLine($"    {command}");
-                    }
+                    var buildsUrl = await GetBuildUrl(buildTypeDocument);
+                    var url = buildsUrl.Replace("/httpAuth/app/rest/", "");
+                    var b = await FetchAsync(teamCityHost, url, client);
+                    var count = b.Root.Attribute("count").Value;
+                    Console.WriteLine(count);
+                    Console.WriteLine(b);
                 }
             }
         }
@@ -131,13 +124,15 @@ namespace Citizen
                 .Select(buildType => Tuple.Create(buildType.Attribute("id").Value, buildType.Attribute("name").Value));
         }
 
-        private static async Task<IEnumerable<string>> GetBuildTypesCommandsAsync(Task<XDocument> build)
+        private static async Task<string> GetBuildUrl(Task<XDocument> buildType)
         {
-            var document = await build;
+            var document = await buildType;
 
             return document
-                .XPathSelectElements("//property[@name='command.parameters']")
-                .Select(p => p.Attribute("value").Value);
+                .Root
+                .Element("builds")
+                .Attribute("href")
+                .Value;
         }
 
         public class BuildCommand
