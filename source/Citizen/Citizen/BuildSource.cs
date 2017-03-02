@@ -14,8 +14,6 @@ namespace Citizen
         {
             var projectsDocument = await FetchAsync(teamCityHost, "httpAuth/app/rest/projects", teamCityClient);
             var projects = GetProjectsAsync(projectsDocument);
-            projectsDocument.Save(@"D:\projects.xml");
-
             var builds = new List<Build>();
             foreach (var project in projects)
             {
