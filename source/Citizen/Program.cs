@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Citizen.Statistics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -34,14 +35,14 @@ namespace Citizen
             PrintBuildStatistics(failureStatistics);
         }
 
-        private static void PrintBuildStatistics(IEnumerable<Tuple<string, int, double, double>> statistics)
+        private static void PrintBuildStatistics(IEnumerable<BuildStatistics> statistics)
         {
-            foreach (var stat in statistics.OrderByDescending(s => s.Item2))
+            foreach (var stat in statistics.OrderByDescending(s => s.BuildCounts))
             {
-                Console.Write($"#{stat.Item2:D3}");
-                Console.Write($" lag {TimeSpan.FromSeconds(stat.Item3):hh\\:mm\\:ss}");
-                Console.Write($" run {TimeSpan.FromSeconds(stat.Item4):hh\\:mm\\:ss}");
-                Console.WriteLine($" ({stat.Item1})");
+                Console.Write($"#{stat.BuildCounts:D3}");
+                Console.Write($" lag {stat.AverageLagTime:hh\\:mm\\:ss}");
+                Console.Write($" run {stat.AverageRunTime:hh\\:mm\\:ss}");
+                Console.WriteLine($" ({stat.BuildTypeName})");
             }
         }
     }
