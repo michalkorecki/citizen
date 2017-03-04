@@ -6,7 +6,7 @@ namespace Citizen.Endpoint.Modules
 	{
 		public IndexModule()
 		{
-			Get["/"] = context => GetIndex();
+			Get["/"] = parameters => GetIndex();
 		}
 
 		private Response GetIndex()

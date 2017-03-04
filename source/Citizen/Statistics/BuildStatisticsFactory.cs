@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Citizen.Statistics
@@ -11,14 +10,20 @@ namespace Citizen.Statistics
 			var buildsByBuildType = builds.Where(b => b.Status == status).GroupBy(b => b.BuildTypeName);
 			foreach (var group in buildsByBuildType)
 			{
-				var averageRunTime = group.Select(b => b.Finished - b.Started).Average(diff => diff.TotalSeconds);
-				var averageLagTime = group.Select(b => b.Started - b.Queued).Average(diff => diff.TotalSeconds);
+				var buildsMostRecentLast = group.OrderBy(b => b.Queued).ToArray();
+				var lastBuild = buildsMostRecentLast.Last();
+				var averageLagTime = MovingAverage.Compute(buildsMostRecentLast.Select(b => b.Started - b.Queued).ToArray()).Last();
+				var averageRunTime = MovingAverage.Compute(buildsMostRecentLast.Select(b => b.Finished - b.Started).ToArray()).Last();
 				yield return new BuildStatistics
 				{
-					AverageLagTime = TimeSpan.FromSeconds(averageLagTime),
-					AverageRunTime = TimeSpan.FromSeconds(averageRunTime),
-					BuildCounts = group.Count(),
+					AverageLagTime = averageLagTime,
+					AverageRunTime = averageRunTime,
+					BuildCount = group.Count(),
 					BuildTypeName = group.Key,
+					LastBuildId = lastBuild.Id,
+					LastBuildQueuedAt = lastBuild.Queued,
+					LastBuildLagTime = lastBuild.Started - lastBuild.Queued,
+					LastBuildRunTime = lastBuild.Finished - lastBuild.Started,
 				};
 			}
 		}

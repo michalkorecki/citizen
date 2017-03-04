@@ -15,9 +15,10 @@ namespace Citizen.Statistics
 			{
 				if (previous == null)
 				{
+					sum += items[i];
+
 					if (i < periods - 1)
 					{
-						sum += items[i];
 						results[i] = TimeSpan.FromSeconds(sum.TotalSeconds / (i + 1));
 						continue;
 					}
@@ -28,7 +29,7 @@ namespace Citizen.Statistics
 					continue;
 				}
 
-				var emaSeconds = (results[i] - previous.Value).TotalSeconds * weight + previous.Value.TotalSeconds;
+				var emaSeconds = items[i].TotalSeconds * weight + previous.Value.TotalSeconds * (1 - weight);
 				var ema = TimeSpan.FromSeconds(emaSeconds);
 				results[i] = ema;
 				previous = ema;

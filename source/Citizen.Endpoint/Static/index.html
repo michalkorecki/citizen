@@ -6,8 +6,64 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.2.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var loadBuildsData = function () {
+                $("div.container").empty();
+                $.ajax({
+                    url: document.URL + "builds"
+                }).then(function (data) {
+                    var createBuildRow = function (item) {
+                        var formatTimestamp = function (timestamp) {
+                            var pad = function (number) {
+                                var merged = "00" + number;
+                                return merged.substr(merged.length - 2);
+                            };
+                            return pad(timestamp.hours) + ":" + pad(timestamp.minutes) + ":" + pad(timestamp.seconds);
+                        };
+                        return $(
+                            "<tr>" +
+                            "<td>" + item.buildTypeName + "</td>" +
+                            "<td>" + item.buildCount + "</td>" +
+                            "<td>" + formatTimestamp(item.averageLagTime) + "</td>" +
+                            "<td>" + formatTimestamp(item.averageRunTime) + "</td>" +
+                            "<td>" + "<a href=\"" + item.lastBuildUrl + "\">" + moment(item.lastBuildQueuedAt, "YYYYMMDDThh:mm:ss").fromNow() + "</a></td>" +
+                            "<td>" + formatTimestamp(item.lastBuildLagTime) + "</td>" +
+                            "<td>" + formatTimestamp(item.lastBuildRunTime) + "</td>" +
+                            "</tr>");
+                    };
+
+                    var table = $("<table class='table table-bordered table-condensed' />");
+                    var head = $("<thead />");
+                    var headRow = $("<tr />");
+                    headRow.append("<th>Build type</th>");
+                    headRow.append("<th>#</th>");
+                    headRow.append("<th>Lag (avg)</th>");
+                    headRow.append("<th>Run (avg)</th>");
+                    headRow.append("<th>Last build</th>");
+                    headRow.append("<th>Lag (last build)</th>");
+                    headRow.append("<th>Run (last build)</th>");
+                    head.append(headRow);
+                    table.append(head);
+                    var body = $("<tbody />");
+                    for (var item of data) {
+                        var row = createBuildRow(item);
+                        body.append(row);
+                    }
+
+                    table.append(body);
+                    $("div.container").append(table);
+                });
+            };
+
+            loadBuildsData();
+        });
+    </script>
 </head>
 <body>
-    <h3>Citizen</h3>
+    <h3>Builds</h3>
+    <div class="container">
+    </div>
 </body>
 </html>

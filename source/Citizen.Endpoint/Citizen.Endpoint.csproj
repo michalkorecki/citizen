@@ -42,6 +42,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -56,6 +57,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Host.cs" />
+    <Compile Include="Modules\BuildStatisticsModule.cs" />
+    <Compile Include="Modules\ConfigurationModule.cs" />
     <Compile Include="Modules\IndexModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -66,6 +69,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Static\index.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Citizen\Citizen.csproj">
+      <Project>{D34F928E-8DFF-40DC-84F2-694504C8D197}</Project>
+      <Name>Citizen</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

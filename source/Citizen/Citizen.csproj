@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Build.cs" />
     <Compile Include="BuildSource.cs" />
+    <Compile Include="Provider.cs" />
     <Compile Include="Statistics\BuildStatistics.cs" />
     <Compile Include="Statistics\BuildStatisticsFactory.cs" />
     <Compile Include="Parameters.cs" />

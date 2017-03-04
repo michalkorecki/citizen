@@ -20,12 +20,6 @@ namespace Citizen
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authenticationHeader);
 			var buildSource = new BuildSource(client, teamCityHost);
 			var builds = await buildSource.GetBuilds();
-
-			foreach (var build in builds)
-			{
-				Console.WriteLine($"Build {build.Id} started {build.Started}, status {build.Status}");
-			}
-
 			var statisticsFactory = new BuildStatisticsFactory();
 			var successStatistics = statisticsFactory.CreateStatistics(builds, "SUCCESS");
 			Console.WriteLine("SUCCESS");
@@ -37,9 +31,9 @@ namespace Citizen
 
 		private static void PrintBuildStatistics(IEnumerable<BuildStatistics> statistics)
 		{
-			foreach (var stat in statistics.OrderByDescending(s => s.BuildCounts))
+			foreach (var stat in statistics.OrderByDescending(s => s.BuildCount))
 			{
-				Console.Write($"#{stat.BuildCounts:D3}");
+				Console.Write($"#{stat.BuildCount:D3}");
 				Console.Write($" lag {stat.AverageLagTime:hh\\:mm\\:ss}");
 				Console.Write($" run {stat.AverageRunTime:hh\\:mm\\:ss}");
 				Console.WriteLine($" ({stat.BuildTypeName})");
