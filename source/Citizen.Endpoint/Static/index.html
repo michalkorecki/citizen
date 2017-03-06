@@ -10,18 +10,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
     <script>
         $(document).ready(function () {
-            $("div.container").on('click', 'button.chart-loader', function (event) {
-                var url = $(this).attr('href');
+            $("div.container").on("click", "button.chart-loader", function (event) {
+                var buildDataUrl = $(this).attr("href");
+                $("canvas.chart").remove();
                 $(this).parent().parent().after(function () {
                     return "<tr><td colspan='8'><canvas id='chart' /></td></tr>";
                 });
                 $.ajax({
-                    url: url
+                    url: buildDataUrl
                 }).then(function (data) {
                     var items = data.map(function (b) { return b.durationInSeconds; });
                     var labels = data.map(function (b) { return b.date; });
                     var config = {
-                        type: 'line',
+                        type: "line",
                         data: {
                             labels: labels,
                             datasets: [{
