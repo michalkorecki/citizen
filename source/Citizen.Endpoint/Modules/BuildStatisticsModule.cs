@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,18 +22,20 @@ namespace Citizen.Endpoint.Modules
 			var results = statistics
 				.Select(s => new
 				{
-					s.AverageLagTime,
-					s.AverageRunTime,
+					AverageLagTime = FormatTimeSpan(s.AverageLagTime),
+					AverageRunTime = FormatTimeSpan(s.AverageRunTime),
 					s.BuildTypeName,
 					s.BuildCount,
 					s.LastBuildQueuedAt,
-					s.LastBuildLagTime,
-					s.LastBuildRunTime,
+					LastBuildLagTime = FormatTimeSpan(s.LastBuildLagTime),
+					LastBuildRunTime = FormatTimeSpan(s.LastBuildRunTime),
 					LastBuildUrl = $"{teamCityHost}/viewLog.html?buildId={s.LastBuildId}",
 				})
 				.ToArray();
 
 			return Response.AsJson(results);
 		}
+
+		private string FormatTimeSpan(TimeSpan timeSpan) => timeSpan.ToString(@"hh\:mm\:ss");
 	}
 }

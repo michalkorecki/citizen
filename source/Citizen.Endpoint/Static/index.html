@@ -15,22 +15,15 @@
                     url: document.URL + "builds"
                 }).then(function (data) {
                     var createBuildRow = function (item) {
-                        var formatTimestamp = function (timestamp) {
-                            var pad = function (number) {
-                                var merged = "00" + number;
-                                return merged.substr(merged.length - 2);
-                            };
-                            return pad(timestamp.hours) + ":" + pad(timestamp.minutes) + ":" + pad(timestamp.seconds);
-                        };
                         return $(
                             "<tr>" +
                             "<td>" + item.buildTypeName + "</td>" +
                             "<td>" + item.buildCount + "</td>" +
-                            "<td>" + formatTimestamp(item.averageLagTime) + "</td>" +
-                            "<td>" + formatTimestamp(item.averageRunTime) + "</td>" +
+                            "<td>" + item.averageLagTime + "</td>" +
+                            "<td>" + item.averageRunTime + "</td>" +
                             "<td>" + "<a href=\"" + item.lastBuildUrl + "\">" + moment(item.lastBuildQueuedAt, "YYYYMMDDThh:mm:ss").fromNow() + "</a></td>" +
-                            "<td>" + formatTimestamp(item.lastBuildLagTime) + "</td>" +
-                            "<td>" + formatTimestamp(item.lastBuildRunTime) + "</td>" +
+                            "<td>" + item.lastBuildLagTime + "</td>" +
+                            "<td>" + item.lastBuildRunTime + "</td>" +
                             "</tr>");
                     };
 
