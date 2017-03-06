@@ -18,11 +18,12 @@
                 $.ajax({
                     url: url
                 }).then(function (data) {
-                    var items = data.map(function (b) { return b.run; });
+                    var items = data.map(function (b) { return b.durationInSeconds; });
+                    var labels = data.map(function (b) { return b.date; });
                     var config = {
                         type: 'line',
                         data: {
-                            labels: items.map(function (_, index) { return index + 1; }),
+                            labels: labels,
                             datasets: [{
                                 label: "Build times",
                                 data: items,

@@ -28,15 +28,15 @@ namespace Citizen
 			return builds;
 		}
 
-        //todo[mk]: for chart use case this could be optimized to use 1 request:
-        //httpAuth/app/rest/builds?locator=buildType:(id:<build_type_id>)&fields=build(status,queuedDate,startDate,finishDate)
-        public async Task<Build[]> GetBuildsByType(string buildTypeId)
-        {
-            var buildInstancesIds = await GetBuildInstancesIdsAsync(buildTypeId);
-            var builds = await Task.WhenAll(buildInstancesIds.Select(GetBuildDetailsAsync));
+		//todo[mk]: for chart use case this could be optimized to use 1 request:
+		//httpAuth/app/rest/builds?locator=buildType:(id:<build_type_id>)&fields=build(status,queuedDate,startDate,finishDate)
+		public async Task<Build[]> GetBuildsByType(string buildTypeId)
+		{
+			var buildInstancesIds = await GetBuildInstancesIdsAsync(buildTypeId);
+			var builds = await Task.WhenAll(buildInstancesIds.Select(GetBuildDetailsAsync));
 
-            return builds;
-        }
+			return builds;
+		}
 
 		private async Task<XDocument> FetchAsync(string resource)
 		{

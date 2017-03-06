@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 using Nancy;
+using Citizen.Statistics;
 
 namespace Citizen.Endpoint.Modules
 {
@@ -20,13 +21,12 @@ namespace Citizen.Endpoint.Modules
 		private async Task<Response> GetBuilds()
 		{
 			var teamCityHost = ConfigurationManager.AppSettings["TeamCityHost"];
-            var buildSource = CreateBuildSource(teamCityHost);
-            var buildStatisticsService = new BuildStatisticsService(buildSource); 
-            var statistics = await buildStatisticsService.GetStatistics();
+			var buildStatisticsService = ComposeStatisticsService(teamCityHost);
+			var statistics = await buildStatisticsService.GetOverviewStatistics();
 			var results = statistics
 				.Select(s => new
 				{
-                    s.BuildTypeId,
+					s.BuildTypeId,
 					AverageLagTime = FormatTimeSpan(s.AverageLagTime),
 					AverageRunTime = FormatTimeSpan(s.AverageRunTime),
 					s.BuildTypeName,
@@ -41,31 +41,34 @@ namespace Citizen.Endpoint.Modules
 			return Response.AsJson(results);
 		}
 
-	    private async Task<Response> GetBuilds(string buildTypeId)
+		private async Task<Response> GetBuilds(string buildTypeId)
 		{
-            var teamCityHost = ConfigurationManager.AppSettings["TeamCityHost"];
-            var buildSource = CreateBuildSource(teamCityHost);
-            var builds = await buildSource.GetBuildsByType(buildTypeId);
-            var results = builds
-                .Select(b => new
-                {
-                    Lag = (int) (b.Started - b.Queued).TotalSeconds,
-                    Run = (int) (b.Finished - b.Started).TotalSeconds,
-                })
-                .ToArray();
+			var teamCityHost = ConfigurationManager.AppSettings["TeamCityHost"];
+			var buildStatisticsService = ComposeStatisticsService(teamCityHost);
+			var statistics = await buildStatisticsService.GetRunTimeStatistics(buildTypeId);
+			var results = statistics
+				.Select(b => new
+				{
+					b.Date,
+					DurationInSeconds = (int) b.Duration.TotalSeconds,
+				})
+				.ToArray();
 
-            return Response.AsJson(results);
-        }
+			return Response.AsJson(results);
+		}
 
-	    private static BuildSource CreateBuildSource(string teamCityHost)
-	    {
-	        //todo[mk]: composition root + di
-	        var authenticationHeader = ConfigurationManager.AppSettings["TeamCityAuthenticationHeader"];
-	        var client = new HttpClient();
-	        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authenticationHeader);
-	        return new BuildSource(client, teamCityHost);
-	    }
+		private static BuildStatisticsService ComposeStatisticsService(string teamCityHost)
+		{
+			//todo[mk]: composition root + di
+			var authenticationHeader = ConfigurationManager.AppSettings["TeamCityAuthenticationHeader"];
+			var client = new HttpClient();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authenticationHeader);
+			var source = new BuildSource(client, teamCityHost);
+			var statisticsService = new BuildStatisticsService(source, new BuildStatisticsGenerator());
 
-	    private string FormatTimeSpan(TimeSpan timeSpan) => timeSpan.ToString(@"hh\:mm\:ss");
+			return statisticsService;
+		}
+
+		private string FormatTimeSpan(TimeSpan timeSpan) => timeSpan.ToString(@"hh\:mm\:ss");
 	}
 }

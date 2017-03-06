@@ -58,7 +58,6 @@
   <ItemGroup>
     <Compile Include="Host.cs" />
     <Compile Include="Modules\BuildStatisticsModule.cs" />
-    <Compile Include="Modules\ConfigurationModule.cs" />
     <Compile Include="Modules\IndexModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

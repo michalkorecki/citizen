@@ -47,6 +47,7 @@
     <Compile Include="Build.cs" />
     <Compile Include="BuildSource.cs" />
     <Compile Include="BuildStatisticsService.cs" />
+    <Compile Include="Statistics\DurationAtDate.cs" />
     <Compile Include="Statistics\BuildStatistics.cs" />
     <Compile Include="Statistics\BuildStatisticsFactory.cs" />
     <Compile Include="Parameters.cs" />

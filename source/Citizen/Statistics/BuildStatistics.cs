@@ -4,7 +4,7 @@ namespace Citizen.Statistics
 {
 	public class BuildStatistics
 	{
-        public string BuildTypeId { get; set; }
+		public string BuildTypeId { get; set; }
 		public string BuildTypeName { get; set; }
 		public int BuildCount { get; set; }
 		public TimeSpan AverageRunTime { get; set; }
