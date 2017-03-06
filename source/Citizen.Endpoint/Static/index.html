@@ -7,13 +7,51 @@
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.2.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
     <script>
         $(document).ready(function () {
+            $("div.container").on('click', 'button.chart-loader', function (event) {
+                var url = $(this).attr('href');
+                $(this).parent().parent().after(function () {
+                    return "<tr><td colspan='8'><canvas id='chart' /></td></tr>";
+                });
+                $.ajax({
+                    url: url
+                }).then(function (data) {
+                    var items = data.map(function (b) { return b.run; });
+                    var config = {
+                        type: 'line',
+                        data: {
+                            labels: items.map(function (_, index) { return index + 1; }),
+                            datasets: [{
+                                label: "Build times",
+                                data: items,
+                                fill: false
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    };
+                    var context = document.getElementById("chart").getContext("2d");
+                    window.chart = new Chart(context, config);
+                });
+            }); 
+
             var loadBuildsData = function () {
                 $("div.container").empty();
                 $.ajax({
                     url: document.URL + "builds"
                 }).then(function (data) {
+                    var createShowChartLink = function (buildTypeId) {
+                        return "<button type='button' class='chart-loader btn btn-primary btn-xs' href='" + document.URL + "builds/" + buildTypeId + "'>Chart</button>";
+                    };
                     var createBuildRow = function (item) {
                         return $(
                             "<tr>" +
@@ -24,6 +62,7 @@
                             "<td>" + "<a href=\"" + item.lastBuildUrl + "\">" + moment(item.lastBuildQueuedAt, "YYYYMMDDThh:mm:ss").fromNow() + "</a></td>" +
                             "<td>" + item.lastBuildLagTime + "</td>" +
                             "<td>" + item.lastBuildRunTime + "</td>" +
+                            "<td>" + createShowChartLink(item.buildTypeId) + "</td>" +
                             "</tr>");
                     };
 
@@ -37,6 +76,7 @@
                     headRow.append("<th>Last build</th>");
                     headRow.append("<th>Lag (last build)</th>");
                     headRow.append("<th>Run (last build)</th>");
+                    headRow.append("<th>Chart</th>");
                     head.append(headRow);
                     table.append(head);
                     var body = $("<tbody />");
