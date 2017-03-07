@@ -24,6 +24,7 @@ namespace Citizen.Endpoint.Modules
 			var buildStatisticsService = ComposeStatisticsService(teamCityHost);
 			var statistics = await buildStatisticsService.GetOverviewStatistics();
 			var results = statistics
+				.OrderByDescending(b => b.BuildCount)
 				.Select(s => new
 				{
 					s.BuildTypeId,
