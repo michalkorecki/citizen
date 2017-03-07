@@ -47,10 +47,9 @@
     <Compile Include="Build.cs" />
     <Compile Include="BuildSource.cs" />
     <Compile Include="BuildStatisticsService.cs" />
+    <Compile Include="Statistics\BuildStatisticsGenerator.cs" />
     <Compile Include="Statistics\DurationAtDate.cs" />
     <Compile Include="Statistics\BuildStatistics.cs" />
-    <Compile Include="Statistics\BuildStatisticsFactory.cs" />
-    <Compile Include="Parameters.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Statistics\MovingAverage.cs" />

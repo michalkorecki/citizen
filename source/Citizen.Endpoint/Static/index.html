@@ -12,7 +12,7 @@
         $(document).ready(function () {
             $("div.container").on("click", "button.chart-loader", function (event) {
                 var buildDataUrl = $(this).attr("href");
-                $("canvas.chart").remove();
+                $("canvas#chart").parent().parent().remove();
                 $(this).parent().parent().after(function () {
                     return "<tr><td colspan='8'><canvas id='chart' /></td></tr>";
                 });

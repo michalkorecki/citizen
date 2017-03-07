@@ -11,6 +11,7 @@ namespace Citizen
 
 		public BuildStatisticsService(BuildSource buildSource, BuildStatisticsGenerator generator)
 		{
+			this.generator = generator;
 			this.buildSource = buildSource;
 		}
 
