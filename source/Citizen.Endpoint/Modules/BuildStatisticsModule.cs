@@ -46,16 +46,14 @@ namespace Citizen.Endpoint.Modules
 		{
 			var teamCityHost = ConfigurationManager.AppSettings["TeamCityHost"];
 			var buildStatisticsService = ComposeStatisticsService(teamCityHost);
-			var statistics = await buildStatisticsService.GetRunTimeStatistics(buildTypeId);
-			var results = statistics
-				.Select(b => new
-				{
-					b.Date,
-					DurationInSeconds = (int) b.Duration.TotalSeconds,
-				})
-				.ToArray();
+            //todo[mk]: should be combined into single call
+			var runTimeStatistics = await buildStatisticsService.GetRunTimeStatistics(buildTypeId);
+            var lagTimeStatistics = await buildStatisticsService.GetLagTimeStatistics(buildTypeId);
+			var run = runTimeStatistics.Select(b => new { b.Date, DurationInSeconds = (int)b.Duration.TotalSeconds }).ToArray();
+            var lag = lagTimeStatistics.Select(b => new { b.Date, DurationInSeconds = (int)b.Duration.TotalSeconds }).ToArray();
+            var result = new { run, lag };
 
-			return Response.AsJson(results);
+            return Response.AsJson(result);
 		}
 
 		private static BuildStatisticsService ComposeStatisticsService(string teamCityHost)

@@ -6,7 +6,7 @@ namespace Citizen.Statistics
 	{
 		public static TimeSpan[] Compute(TimeSpan[] items)
 		{
-			const int periods = 20;
+			const int periods = 35;
 			TimeSpan[] results = new TimeSpan[items.Length];
 			TimeSpan sum = TimeSpan.Zero;
 			TimeSpan? previous = null;
