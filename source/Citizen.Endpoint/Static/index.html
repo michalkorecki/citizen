@@ -21,14 +21,14 @@
                 }).then(function (data) {
                     var runTimes = data.run.map(function (b) { return b.durationInSeconds; });
                     var lagTimes = data.lag.map(function (b) { return b.durationInSeconds; });
-                    var labels = data.run.map(function (b) { return moment(b.date, "YYYYMMDDThh:mm:ss").format("DD/MM/YY hh:mm"); });   
+                    var labels = data.run.map(function (b) { return moment(b.date, "YYYYMMDDThh:mm:ss").format("DD MMM hh:mm"); });
                     var config = {
                         type: "line",
                         data: {
                             labels: labels,
                             datasets: [
                                 {
-                                    label: "Run times (building)",
+                                    label: "Building",
                                     data: runTimes,
                                     yAxisID: "y-axis-run",
                                     borderColor: "#9fdf9f",
@@ -36,7 +36,7 @@
                                     fill: false
                                 },
                                 {
-                                    label: "Lag times (waiting)",
+                                    label: "Waiting",
                                     data: lagTimes,
                                     yAxisID: "y-axis-lag",
                                     borderColor: "#ff8080",
@@ -53,6 +53,10 @@
                                         position: "left",
                                         ticks: {
                                             beginAtZero: false
+                                        },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: "Building (seconds)"
                                         }
                                     },
                                     {
@@ -63,6 +67,10 @@
                                         },
                                         gridLines: {
                                             drawOnChartArea: false
+                                        },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: "Waiting (seconds)"
                                         }
                                     }
                                 ]
