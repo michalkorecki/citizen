@@ -19,9 +19,19 @@
                 $.ajax({
                     url: buildDataUrl
                 }).then(function (data) {
+                    var build = data.build;
+                    
                     var runTimes = data.run.map(function (b) { return b.durationInSeconds; });
+                    var lastBuild = new Array(runTimes.length);
+                    for (var i = 0; i < lastBuild.length; i++) {
+                        lastBuild[i] = NaN;
+                    }
+                    lastBuild.push(build.runTimeInSeconds);
+                    runTimes.push(NaN);
                     var lagTimes = data.lag.map(function (b) { return b.durationInSeconds; });
+                    lagTimes.push(NaN);
                     var labels = data.run.map(function (b) { return moment(b.date, "YYYYMMDDThh:mm:ss").format("DD MMM hh:mm"); });
+                    labels.push("Last build");
                     var config = {
                         type: "line",
                         data: {
@@ -30,6 +40,14 @@
                                 {
                                     label: "Building",
                                     data: runTimes,
+                                    yAxisID: "y-axis-run",
+                                    borderColor: "#9fdf9f",
+                                    backgroundColor: "#40bf40",
+                                    fill: false
+                                },
+                                {
+                                    label: "Last build",
+                                    data: lastBuild,
                                     yAxisID: "y-axis-run",
                                     borderColor: "#9fdf9f",
                                     backgroundColor: "#40bf40",

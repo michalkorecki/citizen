@@ -38,5 +38,13 @@ namespace Citizen
 				.CreateBuildLagTimeStatistics(builds)
 				.ToArray();
 		}
+
+        public async Task<Build> GetLastBuild(string buildTypeId)
+        {
+            var builds = await this.buildSource.GetBuildsByType(buildTypeId);
+            return builds
+                .OrderBy(b => b.Queued)
+                .Last();
+        }
 	}
 }
