@@ -36,6 +36,27 @@
                     url: buildDataUrl
                 }).then(function (data) {
                     var createChart = function (labels, rawTimes, lastBuildTime, settings) {
+                        var toHumanReadableDuration = function (totalSeconds) {
+                            var hours = Math.floor(totalSeconds / 3600);
+                            if (hours >= 10) {
+                                return "long";
+                            }
+
+                            if (hours >= 1) {
+                                var minutes = Math.floor((totalSeconds % 3600) / 60);
+                                var minutesText = minutes == 0 ? "" : " " + minutes + " min";
+                                return hours + " h" + minutesText;
+                            }
+
+                            var minutes = Math.floor(totalSeconds / 60);
+                            if (minutes >= 1) {
+                                var seconds = totalSeconds % 60;
+                                var secondsText = seconds == 0 ? "" : " " + seconds + " s";
+                                return minutes + " min" + secondsText;
+                            }
+
+                            return totalSeconds + " s";
+                        };
                         var timesAverage = rawTimes.map(function (b) { return b.durationInSeconds; });
                         var timesLastBuild = new Array(timesAverage.length);
                         for (var i = 0; i < timesLastBuild.length; i++) {
@@ -70,12 +91,20 @@
                                 ]
                             },
                             options: {
+                                tooltips: {
+                                    callbacks: {
+                                        label: function(tooltipItem, data) {
+                                            return toHumanReadableDuration(tooltipItem.yLabel);
+                                        }
+                                    }
+                                },
                                 scales: {
                                     yAxes: [
                                         {
                                             position: "left",
                                             ticks: {
-                                                beginAtZero: false
+                                                beginAtZero: false,
+                                                callback: function (value) { return toHumanReadableDuration(value); }
                                             },
                                             scaleLabel: {
                                                 display: true,
