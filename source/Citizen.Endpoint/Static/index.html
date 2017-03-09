@@ -11,63 +11,79 @@
     <script>
         $(document).ready(function () {
             $("div.container").on("click", "button.chart-loader", function (event) {
+                $("tr#chart-container").remove();
+                $(this)
+                    .parent()
+                    .parent()
+                    .after(function () {
+                        return "<tr id='chart-container'>" +
+                                 "<td colspan='8'>" +
+                                   "<div class='container'>" +
+                                     "<div class='row'>" +
+                                       "<div class='col-xs-6'>" +
+                                         "<canvas id='run-time-chart' />" +
+                                       "</div>" +
+                                       "<div class='col-xs-6'>" +
+                                         "<canvas id='lag-time-chart' />" +
+                                       "</div>" +
+                                     "</div>" +
+                                   "</div>" + 
+                                 "</td>" +
+                               "</tr>";
+                    });
                 var buildDataUrl = $(this).attr("href");
-                $("canvas#chart").parent().parent().remove();
-                $(this).parent().parent().after(function () {
-                    return "<tr><td colspan='8'><canvas id='chart' /></td></tr>";
-                });
                 $.ajax({
                     url: buildDataUrl
                 }).then(function (data) {
                     var build = data.build;
                     
                     var runTimes = data.run.map(function (b) { return b.durationInSeconds; });
-                    var lastBuild = new Array(runTimes.length);
-                    for (var i = 0; i < lastBuild.length; i++) {
-                        lastBuild[i] = NaN;
+                    var lastBuildRun = new Array(runTimes.length);
+                    for (var i = 0; i < lastBuildRun.length; i++) {
+                        lastBuildRun[i] = NaN;
                     }
-                    lastBuild.push(build.runTimeInSeconds);
+                    lastBuildRun.push(build.runTimeInSeconds);
                     runTimes.push(NaN);
+
                     var lagTimes = data.lag.map(function (b) { return b.durationInSeconds; });
+                    var lastBuildLag = new Array(lagTimes.length);
+                    for (var i = 0; i < lastBuildLag.length; i++) {
+                        lastBuildLag[i] = NaN;
+                    }
+                    lastBuildLag.push(build.lagTimeInSeconds);
                     lagTimes.push(NaN);
+
                     var labels = data.run.map(function (b) { return moment(b.date, "YYYYMMDDThh:mm:ss").format("DD MMM hh:mm"); });
                     labels.push("Last build");
-                    var config = {
+
+                    var config1 = {
                         type: "line",
                         data: {
                             labels: labels,
                             datasets: [
                                 {
-                                    label: "Building",
+                                    label: "Average building time",
                                     data: runTimes,
-                                    yAxisID: "y-axis-run",
-                                    borderColor: "#9fdf9f",
-                                    backgroundColor: "#40bf40",
+                                    borderColor: "#29a329",
+                                    backgroundColor: "#29a329",
+                                    pointRadius: 1,
+                                    pointRadiusHover: 2,
                                     fill: false
                                 },
                                 {
                                     label: "Last build",
-                                    data: lastBuild,
-                                    yAxisID: "y-axis-run",
-                                    borderColor: "#9fdf9f",
-                                    backgroundColor: "#40bf40",
+                                    data: lastBuildRun,
+                                    borderColor: "#196619",
+                                    backgroundColor: "#196619",
+                                    pointRadius: 3,
                                     fill: false
                                 },
-                                {
-                                    label: "Waiting",
-                                    data: lagTimes,
-                                    yAxisID: "y-axis-lag",
-                                    borderColor: "#ff8080",
-                                    backgroundColor: "#ff3333",
-                                    fill: false
-                                }
                             ]
                         },
                         options: {
                             scales: {
                                 yAxes: [
                                     {
-                                        id: "y-axis-run",
                                         position: "left",
                                         ticks: {
                                             beginAtZero: false
@@ -76,15 +92,42 @@
                                             display: true,
                                             labelString: "Building (seconds)"
                                         }
-                                    },
+                                    }
+                                ]
+                            }
+                        }
+                    };
+                    var config2 = {
+                        type: "line",
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: "Average waiting time",
+                                    data: lagTimes,
+                                    borderColor: "#ff9933",
+                                    backgroundColor: "#ff9933",
+                                    pointRadius: 1,
+                                    pointRadiusHover: 2,
+                                    fill: false
+                                },
+                                {
+                                    label: "Last build",
+                                    data: lastBuildLag,
+                                    borderColor: "#e67300",
+                                    backgroundColor: "#e67300",
+                                    pointRadius: 3,
+                                    fill: false
+                                },
+                            ]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [
                                     {
-                                        id: "y-axis-lag",
-                                        position: "right",
+                                        position: "left",
                                         ticks: {
                                             beginAtZero: false
-                                        },
-                                        gridLines: {
-                                            drawOnChartArea: false
                                         },
                                         scaleLabel: {
                                             display: true,
@@ -95,8 +138,10 @@
                             }
                         }
                     };
-                    var context = document.getElementById("chart").getContext("2d");
-                    window.chart = new Chart(context, config);
+                    var context1 = document.getElementById("run-time-chart").getContext("2d");
+                    window.runTimeChart = new Chart(context1, config1);
+                    var context2 = document.getElementById("lag-time-chart").getContext("2d");
+                    window.lagTimeChart = new Chart(context2, config2);
                 });
             }); 
 
