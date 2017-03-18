@@ -56,6 +56,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bootstrapper.cs" />
     <Compile Include="Host.cs" />
     <Compile Include="Modules\BuildStatisticsModule.cs" />
     <Compile Include="Modules\IndexModule.cs" />
@@ -74,6 +75,9 @@
       <Project>{D34F928E-8DFF-40DC-84F2-694504C8D197}</Project>
       <Name>Citizen</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Static\favicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

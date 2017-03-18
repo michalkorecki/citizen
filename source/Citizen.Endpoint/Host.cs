@@ -14,7 +14,7 @@ namespace Citizen.Endpoint
 		public Host()
 		{
 			this.uri = new Uri("http://localhost:9021");
-			this.bootstrapper = new DefaultNancyBootstrapper();
+			this.bootstrapper = new Bootstrapper();
 		}
 
 		public void Start()
